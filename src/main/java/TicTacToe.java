@@ -12,7 +12,9 @@ public class TicTacToe implements ActionListener {
     JPanel buttonPanel = new JPanel();
     JLabel textField = new JLabel();
     JButton[] buttons = new JButton[9];
+    JButton restartButton = new JButton("RESTART");
     boolean player1Turn;
+    int step = 0;
 
 
     TicTacToe(){
@@ -22,6 +24,7 @@ public class TicTacToe implements ActionListener {
         frame.getContentPane().setBackground(new Color(50,50,50));
         frame.setLayout(new BorderLayout());
         frame.setVisible(true);
+        frame.setResizable(false);
 
         textField.setBackground(new Color(20,20,20));
         textField.setForeground(Color.GREEN);
@@ -40,15 +43,23 @@ public class TicTacToe implements ActionListener {
             buttons[i] = new JButton();
             buttonPanel.add(buttons[i]);
             buttons[i].setFont(new Font(null,Font.BOLD,120));
+            buttons[i].setBackground(Color.white);
             buttons[i].setFocusable(false);
             buttons[i].addActionListener(this);
+            buttons[i].setEnabled(false);
         }
 
+        restartButton.setBounds(180,380,440,100);
+        restartButton.setFont(new Font(null,Font.BOLD,80));
+        restartButton.addActionListener(this);
+        restartButton.setVisible(false);
+
         titlePanel.add(textField);
+        frame.add(restartButton);
         frame.add(titlePanel,BorderLayout.NORTH);
         frame.add(buttonPanel);
 
-        firstTurn();
+        showTitle();
     }
 
     @Override
@@ -77,15 +88,23 @@ public class TicTacToe implements ActionListener {
             }
         }
 
+        if (e.getSource()==restartButton){
+            restart();
+        }
+
     }
 
-    public void firstTurn(){
-
+    public void showTitle(){
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        firstTurn();
+    }
+
+    public void firstTurn(){
+
 
         if (random.nextBoolean()) {
             player1Turn = true;
@@ -94,6 +113,9 @@ public class TicTacToe implements ActionListener {
         else {
             player1Turn = false;
             textField.setText("O turn");
+        }
+        for (int i=0;i<9;i++){
+            buttons[i].setEnabled(true);
         }
 
     }
@@ -150,6 +172,11 @@ public class TicTacToe implements ActionListener {
         if ((buttons[2].getText().equals("O")) && (buttons[4].getText().equals("O")) && (buttons[6].getText().equals("O"))) {
             oWins(2,4,6);
         }
+        //tie
+        step++;
+        if (step==9){
+            nobodyWins();
+        }
 
     }
 
@@ -161,6 +188,8 @@ public class TicTacToe implements ActionListener {
             buttons[i].setEnabled(false);
         }
         textField.setText("X Wins!");
+        restartButton.setVisible(true);
+       // restart();
     }
 
     public void oWins(int a,int b,int c){
@@ -171,8 +200,29 @@ public class TicTacToe implements ActionListener {
             buttons[i].setEnabled(false);
         }
         textField.setText("O Wins!");
+        restartButton.setVisible(true);
+        //restart();
 
     }
 
+    public void nobodyWins(){
+        for (int i=0;i<9;i++){
+            buttons[i].setEnabled(false);
+        }
+        textField.setText("It's a tie.");
+        restartButton.setVisible(true);
+       // restart();
+    }
+
+    public void restart(){
+        restartButton.setVisible(false);
+        step=0;
+        for (int i=0;i<9;i++){
+            buttons[i].setText("");
+            buttons[i].setEnabled(true);
+            buttons[i].setBackground(Color.white);
+        }
+        firstTurn();
+    }
 
 }
